@@ -15,36 +15,45 @@ interface UseCollabEditorOptions {
 }
 
 export function useCollabEditor({ documentId, user, onAwarenessChange }: UseCollabEditorOptions) {
-  const ydocRef = useRef<Y.Doc>(new Y.Doc());
-  const providerRef = useRef<HocuspocusProvider | null>(null);
-
-  useEffect(() => {
-    const provider = new HocuspocusProvider({
-      url: `ws://localhost:3001`,
+  const ydocRef = useRef(new Y.Doc());
+  const providerRef = useRef(
+    new HocuspocusProvider({
+      url: 'ws://localhost:3002',
       name: documentId,
       document: ydocRef.current,
       token: getAccessToken() ?? '',
-      onAwarenessChange: ({ states }) => {
-        const users = states
-          .map(({ clientId, ...data }) => ({ clientId, ...(data as Omit<PresenceUser, 'clientId'>) }))
-          .filter(u => u.userId);
-        onAwarenessChange?.(users as PresenceUser[]);
-      },
-    });
+    })
+  );
 
-    providerRef.current = provider;
+  const onAwarenessChangeRef = useRef(onAwarenessChange);
+  onAwarenessChangeRef.current = onAwarenessChange;
 
-    return () => {
-      provider.destroy();
+  useEffect(() => {
+    const provider = providerRef.current;
+    const handler = ({ states }: { states: Map<number, Record<string, unknown>> }) => {
+      const users: PresenceUser[] = [];
+      states.forEach((data, clientId) => {
+        if (data.userId) {
+          users.push({ clientId, ...(data as Omit<PresenceUser, 'clientId'>) });
+        }
+      });
+      onAwarenessChangeRef.current?.(users);
     };
-  }, [documentId]);
+
+    provider.on('awarenessChange', handler);
+    return () => {
+      provider.off('awarenessChange', handler);
+      provider.destroy();
+      ydocRef.current.destroy();
+    };
+  }, []);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ history: false }),
       Collaboration.configure({ document: ydocRef.current }),
       CollaborationCursor.configure({
-        provider: providerRef.current!,
+        provider: providerRef.current,
         user: { name: user.name, color: user.color },
       }),
     ],

@@ -6,21 +6,18 @@ import { hocuspocusServer } from './hocuspocus/server.js';
 
 const app = createApp();
 
-const server = app.listen(env.PORT, () => {
-  logger.info({ port: env.PORT }, 'Server started');
+app.listen(env.PORT, () => {
+  logger.info({ port: env.PORT }, 'HTTP server started');
 });
 
-server.on('upgrade', (request, socket, head) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (hocuspocusServer as any).handleUpgrade(request, socket, head);
+hocuspocusServer.listen(env.COLLAB_PORT, () => {
+  logger.info({ port: env.COLLAB_PORT }, 'Hocuspocus server started');
 });
 
 async function shutdown() {
   logger.info('Shutting down...');
-  server.close(async () => {
-    await prisma.$disconnect();
-    process.exit(0);
-  });
+  await prisma.$disconnect();
+  process.exit(0);
 }
 
 process.on('SIGTERM', shutdown);
