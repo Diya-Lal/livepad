@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import { authRouter } from './features/auth/auth.routes.js';
+import { documentsRouter } from './features/documents/documents.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 export function createApp() {
@@ -17,6 +18,7 @@ export function createApp() {
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
   app.use('/api/auth', authRouter);
+  app.use('/api/documents', documentsRouter);
 
   app.use(errorHandler);
 
