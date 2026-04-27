@@ -11,18 +11,25 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@hocuspocus/provider": "^4.0.0",
+    "@hookform/resolvers": "^3.6.0",
     "@livepad/shared": "*",
     "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-virtual": "^3.8.1",
+    "@tiptap/extension-collaboration": "^2.27.2",
+    "@tiptap/extension-collaboration-cursor": "^2.26.2",
+    "@tiptap/pm": "^2.27.2",
+    "@tiptap/react": "^2.27.2",
+    "@tiptap/starter-kit": "^2.27.2",
+    "clsx": "^2.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.24.0",
-    "zustand": "^4.5.4",
+    "tailwind-merge": "^2.3.0",
+    "yjs": "^13.6.30",
     "zod": "^3.23.8",
-    "@hookform/resolvers": "^3.6.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.3.0"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.45.1",
@@ -33,6 +40,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
+    "jsdom": "^29.1.0",
     "msw": "^2.3.1",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4",

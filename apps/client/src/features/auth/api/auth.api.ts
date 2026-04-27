@@ -1,5 +1,5 @@
 import { apiRequest } from '@/lib/api-client';
-import type { RegisterInput, LoginInput, AuthResponse } from '@livepad/shared';
+import type { RegisterInput, LoginInput, AuthResponse, User } from '@livepad/shared';
 
 export async function registerUser(input: RegisterInput): Promise<{ data: AuthResponse }> {
   return apiRequest('/api/auth/register', {
@@ -23,4 +23,8 @@ export async function logoutUser(): Promise<void> {
 
 export async function refreshToken(): Promise<{ data: { accessToken: string } }> {
   return apiRequest('/api/auth/refresh', { method: 'POST', skipAuth: true });
+}
+
+export async function getMe(): Promise<{ data: { user: User } }> {
+  return apiRequest('/api/auth/me');
 }
