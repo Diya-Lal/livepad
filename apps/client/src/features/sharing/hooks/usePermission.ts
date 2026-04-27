@@ -1,6 +1,6 @@
 import { useReducer, useEffect } from 'react';
 import { fetchPermissions, inviteUser, updatePermission, revokePermission } from '../api/permissions.api';
-import type { Permission, InviteInput, Role } from '@livepad/shared';
+import type { Permission, InviteInput, Role, UpdatePermissionInput } from '@livepad/shared';
 
 type PermissionState = {
   status: 'idle' | 'loading' | 'updating' | 'error';
@@ -74,7 +74,7 @@ export function usePermission(documentId: string) {
     }
   };
 
-  const changeRole = async (permissionId: string, role: Role) => {
+  const changeRole = async (permissionId: string, role: UpdatePermissionInput['role']) => {
     dispatch({ type: 'UPDATE_ROLE', permissionId, role });
     try {
       await updatePermission(documentId, permissionId, { role });

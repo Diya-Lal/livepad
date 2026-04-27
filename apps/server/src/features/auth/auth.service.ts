@@ -43,20 +43,13 @@ export class AuthService {
   }
 
   async refresh(token: string) {
-    let payload: { sub: string };
-    try {
-      payload = jwt.verify(token, env.JWT_REFRESH_SECRET) as { sub: string };
-    } catch {
-      throw Object.assign(new Error('Invalid refresh token'), { statusCode: 401 });
-    }
-
     const stored = await prisma.refreshToken.findUnique({ where: { token } });
     if (!stored || stored.expiresAt < new Date()) {
-      throw Object.assign(new Error('Refresh token expired'), { statusCode: 401 });
+      throw Object.assign(new Error('Invalid or expired refresh token'), { statusCode: 401 });
     }
 
     await prisma.refreshToken.delete({ where: { token } });
-    const { accessToken, refreshToken } = await this.generateTokens(payload.sub);
+    const { accessToken, refreshToken } = await this.generateTokens(stored.userId);
     return { accessToken, refreshToken };
   }
 
