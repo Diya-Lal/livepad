@@ -1,5 +1,14 @@
+import { type Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import type { CreateDocumentInput, UpdateDocumentInput } from '@livepad/shared';
+
+type PermissionWithDocument = Prisma.PermissionGetPayload<{
+  include: {
+    document: {
+      select: { id: true; title: true; ownerId: true; createdAt: true; updatedAt: true; deletedAt: true };
+    };
+  };
+}>;
 
 export class DocumentsService {
   async listForUser(userId: string) {
@@ -19,12 +28,12 @@ export class DocumentsService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const sharedIds = new Set(permissions.map(p => p.documentId));
-    const ownedNotShared = owned.filter(d => !sharedIds.has(d.id));
+    const sharedIds = new Set(permissions.map((p: PermissionWithDocument) => p.documentId));
+    const ownedNotShared = owned.filter((d: typeof owned[number]) => !sharedIds.has(d.id));
 
     const all = [
-      ...ownedNotShared.map(d => ({ ...d, role: 'OWNER' as const })),
-      ...permissions.map(p => ({ ...p.document, role: p.role })),
+      ...ownedNotShared.map((d: typeof owned[number]) => ({ ...d, role: 'OWNER' as const })),
+      ...permissions.map((p: PermissionWithDocument) => ({ ...p.document, role: p.role })),
     ];
 
     all.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
